@@ -1,5 +1,16 @@
+// 1. 계좌 ID를 실제 통장 이름으로 변환해주는 사전
+const ACCOUNT_NAMES = {
+  acc1: '우리 첫급여통장',
+  acc2: '우리 SUPER주거래통장',
+  acc3: '우리 WON 적금'
+};
+
 export const TransactionItem = ({ transaction }) => {
-  const isDeposit = transaction.type === 'IN';
+  const isDeposit = transaction.type === 'in';
+  const isDone = transaction.status === 'done';
+
+  // 통장 이름 가져오기 (매핑표에 없으면 id 표시)
+  const displayName = ACCOUNT_NAMES[transaction.accountId] || transaction.accountName || transaction.accountId;
 
   return (
     <div
@@ -11,7 +22,7 @@ export const TransactionItem = ({ transaction }) => {
         backgroundColor: '#ffffff'
       }}
     >
-      {/* 1. 좌측 입출금 화살표 아이콘 */}
+      {/* 1. 좌측 아이콘 */}
       <div
         style={{
           width: '36px',
@@ -31,23 +42,10 @@ export const TransactionItem = ({ transaction }) => {
         {isDeposit ? '↓' : '↑'}
       </div>
 
-      {/* 2. 중앙 텍스트 영역 (왼쪽 정렬 및 한 줄 유지) */}
-      <div
-        style={{
-          flex: 1,
-          textAlign: 'left',
-          minWidth: 0
-        }}
-      >
-        <div
-          style={{
-            fontSize: '15px',
-            fontWeight: '600',
-            color: '#212529',
-            marginBottom: '3px'
-          }}
-        >
-          {transaction.title}
+      {/* 2. 중앙 내용 */}
+      <div style={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
+        <div style={{ fontSize: '15px', fontWeight: '600', color: '#212529', marginBottom: '3px' }}>
+          {transaction.desc}
         </div>
         <div
           style={{
@@ -59,34 +57,28 @@ export const TransactionItem = ({ transaction }) => {
             whiteSpace: 'nowrap'
           }}
         >
+          {/* 변환된 displayName 출력 */}
           <span>
-            {transaction.time} · {transaction.accountName}
+            {transaction.time} · {displayName}
           </span>
           <span
             style={{
               padding: '1px 6px',
               borderRadius: '4px',
-              backgroundColor: transaction.status === '완료' ? '#e6fcf5' : '#fff9db',
-              color: transaction.status === '완료' ? '#0ca678' : '#f59f00',
+              backgroundColor: isDone ? '#e6fcf5' : '#fff9db',
+              color: isDone ? '#0ca678' : '#f59f00',
               fontSize: '11px',
               fontWeight: '600',
               flexShrink: 0
             }}
           >
-            {transaction.status}
+            {isDone ? '완료' : '처리중'}
           </span>
         </div>
       </div>
 
-      {/* 3. 우측 금액 및 잔액 영역 (줄바꿈 방지) */}
-      <div
-        style={{
-          textAlign: 'right',
-          flexShrink: 0,
-          whiteSpace: 'nowrap',
-          paddingLeft: '12px'
-        }}
-      >
+      {/* 3. 우측 금액 및 잔액 */}
+      <div style={{ textAlign: 'right', flexShrink: 0, whiteSpace: 'nowrap', paddingLeft: '12px' }}>
         <div
           style={{
             fontSize: '15px',
@@ -97,13 +89,8 @@ export const TransactionItem = ({ transaction }) => {
         >
           {isDeposit ? `+${transaction.amount.toLocaleString()}` : `-${transaction.amount.toLocaleString()}`}원
         </div>
-        <div
-          style={{
-            fontSize: '12px',
-            color: '#868e96'
-          }}
-        >
-          잔액 {transaction.balance.toLocaleString()}원
+        <div style={{ fontSize: '12px', color: '#868e96' }}>
+          잔액 {transaction.balanceAfter.toLocaleString()}원
         </div>
       </div>
     </div>
