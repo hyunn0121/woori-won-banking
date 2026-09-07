@@ -9,6 +9,7 @@ import AccountSection from './components/AccountSection';
 import RecentTransaction from './components/RecentTransaction';
 import BottomNav from './components/BottomNav';
 import TransactionDetailBottomSheet from './components/TransactionBottomSheet/TransactionBottomSheet';
+import TransferPage from './components/Transfer/TransferPage';
 
 import './App.css';
 
@@ -20,7 +21,9 @@ function App() {
 
   // 바텀시트 열림/닫힘 상태 관리
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isTransferPageOpen, setIsTransferPageOpen] = useState(false);
 
+  // 거래 내역 확인 바텀시트
   const handleOpenSheet = () => {
     setIsBottomSheetOpen(true);
   };
@@ -28,7 +31,7 @@ function App() {
   const handleCloseSheet = () => {
     setIsBottomSheetOpen(false);
   };
-
+  
   // 서버에서 데이터 불러오기
   useEffect(() => {
     const loadData = async () => {
@@ -64,42 +67,59 @@ function App() {
       </div>
     );
   }
+  
+  // 이체 화면
+  const handleOpenTransfer = () => {
+    setIsTransferPageOpen(true);
+  };
+
+  const handleCloseTransfer = () => {
+    setIsTransferPageOpen(false);
+  };
 
   return (
-    <div className="phone-frame">
-      {/* 1. 최상단 고정 헤더 */}
-      <Header />
+    <div className="app">
+      {isTransferPageOpen ? (
+        // 이체 화면 영역
+        <TransferPage onPageClose={handleCloseTransfer} />
+      ) : (
+        // 기존 모바일 뱅킹 메인 화면 영역
+        <div className="phone-frame">
+          {/* 1. 최상단 고정 헤더 */}
+          <Header />
 
-      {/* 2. 스크롤되는 중앙 메인 컨텐츠 */}
-      <main className="content-body">
-        {hasError ? (
-          // 서버 에러(오프라인) 시 민감한 정보 대신 보여줄 안전한 대체 화면
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '8px', color: '#64748b', textAlign: 'center' }}>
-            <p style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a' }}>서비스 연결을 확인할 수 없습니다</p>
-            <p style={{ fontSize: '13px' }}>네트워크 상태가 불안정하거나<br />서버 점검 중입니다.</p>
-          </div>
-        ) : (
-          // 정상 작동 시 기존 콘텐츠 출력
-          <>
-            <p className="greeting-hi">안녕하세요 👋</p>
-            <p className="greeting-name">김민준님</p>
+          {/* 2. 스크롤되는 중앙 메인 컨텐츠 */}
+          <main className="content-body">
+            {hasError ? (
+              // 서버 에러(오프라인) 시 민감한 정보 대신 보여줄 안전한 대체 화면
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '8px', color: '#64748b', textAlign: 'center' }}>
+                <p style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a' }}>서비스 연결을 확인할 수 없습니다</p>
+                <p style={{ fontSize: '13px' }}>네트워크 상태가 불안정하거나<br />서버 점검 중입니다.</p>
+              </div>
+            ) : (
+              // 정상 작동 시 기존 콘텐츠 출력
+              <>
+                <p className="greeting-hi">안녕하세요 👋</p>
+                <p className="greeting-name">김민준님</p>
 
-            <TotalAssetCard accounts={accounts} hasError={hasError} />
-            <QuickMenu onOpenSheet={handleOpenSheet} />
-            <AccountSection accounts={accounts} onOpenSheet={handleOpenSheet} />
-            <RecentTransaction transactions={transactions} />
-          </>
-        )}
-      </main>
+                <TotalAssetCard accounts={accounts} hasError={hasError} />
+                <QuickMenu onOpenSheet={handleOpenSheet} onOpenTransfer={handleOpenTransfer} />
+                <AccountSection accounts={accounts} onOpenSheet={handleOpenSheet} />
+                <RecentTransaction transactions={transactions} />
+              </>
+            )}
+          </main>
 
-      {/* 3. 최하단 고정 네비게이션 */}
-      <BottomNav />
+          {/* 3. 최하단 고정 네비게이션 */}
+          <BottomNav />
 
-      {/* 4. 바텀시트 */}
-      <TransactionDetailBottomSheet 
-        isOpen={isBottomSheetOpen} 
-        onClose={handleCloseSheet} 
-      />
+          {/* 4. 바텀시트 */}
+          <TransactionDetailBottomSheet 
+            isOpen={isBottomSheetOpen} 
+            onClose={handleCloseSheet} 
+          />
+        </div>
+      )}
     </div>
   );
 }

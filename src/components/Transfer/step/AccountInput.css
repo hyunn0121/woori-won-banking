@@ -1,0 +1,146 @@
+.account-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* 타이틀 */
+.title-area {
+  margin-bottom: 24px;
+}
+
+.main-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111111;
+  margin: 0 0 6px 0;
+  text-align: left;
+}
+
+.sub-title {
+  font-size: 13.5px;
+  color: #666666;
+  margin: 0;
+  text-align: left;
+}
+
+/* 폼 디자인 */
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.input-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Select & Input 공통 기본 스타일 */
+.custom-select,
+.custom-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  background-color: #f4f5f7;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111111;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.2s;
+}
+
+/* Select 전용 스타일 (화살표 추가 및 기본 드롭다운 제거) */
+.custom-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 40px; /* 화살표 아이콘 영역 확보 */
+  cursor: pointer;
+
+  /* SVG URL 인코딩 정정: #333333 -> %23333333 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23333333' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+
+.custom-input::placeholder {
+  color: #9aa0a6;
+  font-size: 13.5px;
+  font-weight: 400;
+}
+
+/* Focus 공통 스타일 */
+.custom-input:focus,
+.custom-select:focus {
+  background-color: #ffffff;
+  border-color: #2b7fff;
+}
+
+/* 예금주 확인 배지 */
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start; /* 컨테이너 내에서 왼쪽 정렬 */
+  margin-top: 4px;
+  padding: 8px 14px;
+  background-color: #e6f4eb; /* 스크린샷과 유사한 연한 민트/초록 배경 */
+  color: #008243; /* 초록색 텍스트 */
+  border-radius: 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  animation: fadeIn 0.3s ease-out; /* 나타날 때 부드러운 효과 */
+}
+
+/* 배지 등장 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 하단 고정 버튼 영역 */
+.button-area {
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.btn-next {
+  width: 100%;
+  height: 50px;
+  border-radius: 14px;
+  border: none;
+  background-color: #d1d5db;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: not-allowed;
+  transition: background-color 0.2s;
+}
+
+.btn-next.active {
+  background-color: #0066ff;
+  cursor: pointer;
+}
