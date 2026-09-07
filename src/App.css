@@ -1,7 +1,11 @@
 .app {
- width: 390px;
- min-height: 700px;
- margin: 0 auto;
- background-color: white;
- border: 3px solid #dddd; 
+  width: 390px;
+  min-height: 700px;
+  margin: 0 auto;
+  background-color: white;
+  border: 3px solid #ddd;
+  
+  /* absolute -> relative로 수정 (바텀시트의 기준점이 됨) */
+  position: relative; 
+  overflow: hidden;
 }
