@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css';
+import { TransactionSection } from './components/TransactionSection'; 
 import TransactionDetailBottomSheet from './components/TransactionBottomSheet/TransactionBottomSheet';
 
 
@@ -16,7 +17,8 @@ function App() {
 
   return (
     <div className="app">
-      
+      <TransactionSection /> 
+
     </div>
   );
 }
