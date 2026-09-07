@@ -183,6 +183,7 @@
     font-size: 14px;
     font-weight: 500;
     opacity: 0.9;
+    color: #ffffff;
   }
 
   .eye-btn {
@@ -199,11 +200,13 @@
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 6px;
+    color: #ffffff;
   }
 
   .total-card .sub {
     font-size: 12px;
     opacity: 0.8;
+    color: #ffffff;
   }
 
   /* ====================================================
