@@ -1,18 +1,19 @@
 // src/components/TotalAssetCard.jsx
 import { useState } from 'react';
 
-/**
- * [TotalAssetCard 컴포넌트]
- * 역할: 전체 계좌 잔액 합산 출력 및 보기/숨기기 토글
- * Props:
- *  - accounts: 계좌 정보 객체 배열
- */
-const TotalAssetCard = ({ accounts = [] }) => {
-  // 금액 숨김 여부 상태 (State Colocation 적용)
+const TotalAssetCard = ({ accounts = [], hasError = false }) => {
   const [isHide, setIsHide] = useState(false);
 
-  // 모든 계좌 잔액 합산
   const totalBalance = accounts.reduce((acc, cur) => acc + cur.balance, 0);
+
+  // 에러 발생 시 카드 내부 정보를 아예 숨김
+  if (hasError) {
+    return (
+      <div className="total-card" style={{ opacity: 0.6, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100px' }}>
+        <p style={{ fontSize: '13px', color: '#ffffff' }}>정보를 불러올 수 없습니다.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="total-card">
@@ -31,7 +32,9 @@ const TotalAssetCard = ({ accounts = [] }) => {
         {isHide ? '••••••••원' : `${totalBalance.toLocaleString()}원`}
       </p>
 
-      <p className="sub">계좌 {accounts.length}개 합산 금액입니다</p>
+      <p className="sub">
+        계좌 {accounts.length}개 합산 금액입니다
+      </p>
     </div>
   );
 };
