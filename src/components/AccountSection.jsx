@@ -1,6 +1,4 @@
-// src/components/AccountSection.jsx
-
-const AccountSection = ({ accounts = [], onViewAll, onTransfer }) => {
+const AccountSection = ({ accounts = [], onViewAll, onTransfer, onSelectAccount }) => {
   return (
     <section className="account-section">
       <div className="section-head">
@@ -13,7 +11,12 @@ const AccountSection = ({ accounts = [], onViewAll, onTransfer }) => {
       <ul className="account-list">
         {accounts.map((account) => (
           <li key={account.id} className="account-card">
-            <div className="account-info">
+            {/* 통장 정보(이름, 번호) 영역을 누르면 거래내역으로 이동 */}
+            <div 
+              className="account-info" 
+              style={{ cursor: 'pointer' }}
+              onClick={() => onSelectAccount && onSelectAccount(account.nickname)}
+            >
               <span className="account-name">{account.nickname}</span>
               <span className="account-number">{account.accountNo}</span>
             </div>
@@ -23,6 +26,7 @@ const AccountSection = ({ accounts = [], onViewAll, onTransfer }) => {
                 {Number(account.balance).toLocaleString()}원
               </span>
               
+              {/* 원래 원본 상태 코드 그대로 유지 (이체 연동 안 함) */}
               <button 
                 type="button" 
                 className="transfer-btn"

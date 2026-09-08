@@ -5,8 +5,8 @@ import { DailyTransactionGroup } from './DailyTransactionGroup';
 
 const ACCOUNT_LIST = ['전체계좌', '우리 첫급여통장', '우리 SUPER주거래통장'];
 
-export const TransactionSection = () => {
-  const [selectedAccount, setSelectedAccount] = useState('전체계좌');
+export const TransactionSection = ({ initialAccount = '전체계좌' }) => {
+  const [selectedAccount, setSelectedAccount] = useState(initialAccount);
   const [selectedFilter, setSelectedFilter] = useState('ALL');
 
   // API 연동을 위한 3가지 필수 상태

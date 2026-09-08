@@ -1,15 +1,12 @@
+import React from 'react';
 
-/**
- * [QuickMenu 컴포넌트]
- * 역할: 자주 쓰는 주요 메뉴(이체, 거래내역, 상품, 자산관리, 전체) 숏컷 버튼 목록 출력
- */
-
-import React from 'react'
-
-const QuickMenu = () => {
-
+const QuickMenu = ({ onGoToHistory }) => {
   const handleMenuClick = (menuName) => {
-    console.log(`👉 퀵메뉴 클릭됨: ${menuName}`);
+    if (menuName === '거래내역') {
+      if (onGoToHistory) onGoToHistory();
+    } else {
+      console.log(`👉 퀵메뉴 클릭됨: ${menuName}`);
+    }
   };
 
   return (
@@ -48,4 +45,4 @@ const QuickMenu = () => {
   );
 };
 
-export default QuickMenu
+export default QuickMenu;
