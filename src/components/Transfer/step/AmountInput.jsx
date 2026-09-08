@@ -1,14 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './AmountInput.css';
 
 const AmountInput = ({ data, updateData, onNext, onPrev }) => {
-    const BALANCE = 2284560;
     const numAmount = Number(data.amount || 0);
-    
+
+    const [balance, setBalance] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const [accountError, setAccountError] = useState('');
+
     // 조건 상태 분기
     const isLessThanMin = data.amount && numAmount > 0 && numAmount < 100;
-    const isExceedBalance = numAmount > BALANCE;
-    const isValidSuccess = numAmount >= 100 && numAmount <= BALANCE;
+    const isExceedBalance = numAmount > balance;
+    const isValidSuccess = numAmount >= 100 && numAmount <= balance;
+
+    useEffect(() => {
+        const fetchAccount = async () => {
+            try {
+                setIsLoading(true);
+                setAccountError('');
+
+                const response = await fetch(
+                    `api/accounts/${data.fromAccountId}`
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message);
+                }
+
+                setBalance(result.balance);
+            } catch (error) {
+                setAccountError(error.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (data.fromAccountId) {
+            fetchAccount();
+        }
+    }, [data.fromAccountId]);
 
     // 다음 버튼은 잔액 이하 및 100원 이상일 때만 활성화
     const isFormValid = isValidSuccess;
@@ -52,17 +84,30 @@ const AmountInput = ({ data, updateData, onNext, onPrev }) => {
 
     return (
         <div className="amount-input-wrapper">
-            {/* 타이틀 영역 */}
+
             <div className="title-area">
-                <h1 className="main-title">얼마를 보낼까요?</h1>
+                <h1 className="main-title">
+                    얼마를 보낼까요?
+                </h1>
+
                 <p className="sub-title">
-                    {data.myAccount || '우리 첫급여통장 잔액 2,284,560원'} 중에서 보냅니다
+                    {data.myAccount || '출금 계좌'}의 잔액{' '}
+                    {formatAmount(balance)}원 중에서 보냅니다
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="amount-form">
+            {accountError && (
+                <p className="message error-message">
+                    {accountError}
+                </p>
+            )}
+
+            <form
+                onSubmit={handleSubmit}
+                className="amount-form"
+            >
                 <div className="input-group">
-                    {/* 금액 입력 박스 */}
+
                     <div className="amount-input-container">
                         <input
                             type="text"
@@ -70,22 +115,32 @@ const AmountInput = ({ data, updateData, onNext, onPrev }) => {
                             value={formatAmount(data.amount)}
                             onChange={handleInputChange}
                             className={getInputClassName()}
+                            disabled={isLoading}
                         />
                     </div>
-                    {/* 안내 및 에러 메시지 분기 */}
+
+                    {/* 최소 금액 미만 */}
                     {isLessThanMin && (
-                        <p className="message error-message">최소 이체 금액은 100원입니다</p>
+                        <p className="message error-message">
+                            최소 이체 금액은 1,000원입니다
+                        </p>
                     )}
+
+                    {/* 잔액 초과 */}
                     {isExceedBalance && (
-                        <p className="message error-message">잔액을 초과하여 이체할 수 없습니다</p>
+                        <p className="message error-message">
+                            잔액을 초과하여 이체할 수 없습니다
+                        </p>
                     )}
+
+                    {/* 정상 */}
                     {isValidSuccess && (
                         <p className="message success-message">
                             {formatAmount(data.amount)}원 이체 가능합니다
                         </p>
                     )}
 
-                    {/* 퀵 금액 선택 버튼들 */}
+                    {/* 퀵 금액 */}
                     <div className="quick-btn-group">
                         <button
                             type="button"
@@ -94,6 +149,7 @@ const AmountInput = ({ data, updateData, onNext, onPrev }) => {
                         >
                             +1만
                         </button>
+
                         <button
                             type="button"
                             className="quick-btn"
@@ -101,6 +157,7 @@ const AmountInput = ({ data, updateData, onNext, onPrev }) => {
                         >
                             +5만
                         </button>
+
                         <button
                             type="button"
                             className="quick-btn"
@@ -108,6 +165,7 @@ const AmountInput = ({ data, updateData, onNext, onPrev }) => {
                         >
                             +10만
                         </button>
+
                         <button
                             type="button"
                             className="quick-btn"
@@ -118,15 +176,17 @@ const AmountInput = ({ data, updateData, onNext, onPrev }) => {
                     </div>
                 </div>
 
-                {/* 하단 버튼 영역 (다음 / 이전으로) */}
                 <div className="button-area">
                     <button
                         type="submit"
-                        className={`btn-next ${isFormValid ? 'active' : ''}`}
+                        className={`btn-next ${
+                            isFormValid ? 'active' : ''
+                        }`}
                         disabled={!isFormValid}
                     >
                         다음
                     </button>
+
                     <button
                         type="button"
                         className="btn-prev"
