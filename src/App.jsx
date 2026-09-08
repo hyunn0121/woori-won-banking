@@ -12,22 +12,36 @@ import { TransactionSection } from './components/TransactionSection';
 
 import './App.css';
 
+// 계좌 ID 매핑 사전
+const ACCOUNT_NAMES = {
+  acc1: '우리 첫급여통장',
+  acc2: '우리 SUPER주거래통장',
+  acc3: '우리 WON 적금'
+};
+
 function App() {
   const [accounts, setAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // 1. 현재 탭 및 거래내역 화면용 선택 계좌 상태만 관리
   const [activeTab, setActiveTab] = useState('home');
   const [selectedAccountForHistory, setSelectedAccountForHistory] = useState('전체계좌');
 
   // 바텀시트 상태
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const handleOpenSheet = () => setIsBottomSheetOpen(true);
-  const handleCloseSheet = () => setIsBottomSheetOpen(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
 
-  // 2. 거래내역 화면으로 이동하는 전용 함수
+  const handleOpenSheetWithData = (transactionItem) => {
+    setSelectedTransaction(transactionItem);
+    setIsBottomSheetOpen(true);
+  };
+
+  const handleCloseSheet = () => {
+    setIsBottomSheetOpen(false);
+    setSelectedTransaction(null);
+  };
+
   const handleGoToHistory = (accountName = '전체계좌') => {
     setSelectedAccountForHistory(accountName);
     setActiveTab('history');
@@ -44,8 +58,8 @@ function App() {
           fetchTransactions(),
         ]);
         
-        setAccounts(accountData);
-        setTransactions(transactionData);
+        setAccounts(accountData || []);
+        setTransactions(transactionData || []);
       } catch (error) {
         console.error('데이터를 불러오는 중 오류가 발생했습니다:', error);
         setHasError(true);
@@ -65,24 +79,40 @@ function App() {
     );
   }
 
+  // 바텀시트로 넘겨줄 데이터 변환 (계좌 ID -> 한글 이름 반영)
+  const formatTransactionForSheet = (tx) => {
+    if (!tx) return null;
+    const isDeposit = tx.type === 'in';
+    const amountStr = `${isDeposit ? '+' : '-'}${Number(tx.amount || 0).toLocaleString()}`;
+    const accountDisplayName = ACCOUNT_NAMES[tx.accountId] || tx.accountName || tx.accountId || '우리 첫급여통장';
+
+    return {
+      storeName: tx.desc || tx.title || '거래 내역',
+      amount: amountStr,
+      date: `${tx.date || ''} ${tx.time || ''}`,
+      account: accountDisplayName,
+      balance: Number(tx.balanceAfter || tx.balance || 0).toLocaleString(),
+      status: tx.status === 'done' || tx.status === '완료' ? '완료' : '처리중'
+    };
+  };
+
   return (
     <div className="app">
       <div className="phone-frame">
-        {/* 1. 최상단 고정 헤더 */}
         <Header />
 
-        {/* 2. 중앙 컨텐츠 영역 */}
-        <main className="content-body">
+        <main className="content-body" style={{ overflowY: 'auto' }}>
           {hasError ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '8px', color: '#64748b', textAlign: 'center' }}>
               <p style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a' }}>서비스 연결을 확인할 수 없습니다</p>
               <p style={{ fontSize: '13px' }}>네트워크 상태가 불안정하거나<br />서버 점검 중입니다.</p>
             </div>
           ) : activeTab === 'history' ? (
-            /* 거래내역 탭일 때 나의 거래내역 화면 출력 */
-            <TransactionSection initialAccount={selectedAccountForHistory} />
+            <TransactionSection 
+              initialAccount={selectedAccountForHistory} 
+              onSelectTransaction={handleOpenSheetWithData}
+            />
           ) : (
-            /* 홈 탭일 때 기본 홈 화면 출력 */
             <>
               <p className="greeting-hi">안녕하세요 👋</p>
               <p className="greeting-name">김민준님</p>
@@ -95,7 +125,6 @@ function App() {
               
               <AccountSection 
                 accounts={accounts} 
-                onOpenSheet={handleOpenSheet}
                 onViewAll={() => handleGoToHistory('전체계좌')}
                 onSelectAccount={(accName) => handleGoToHistory(accName)}
               />
@@ -103,12 +132,12 @@ function App() {
               <RecentTransaction 
                 transactions={transactions} 
                 onMoreClick={() => handleGoToHistory('전체계좌')}
+                onSelectTransaction={handleOpenSheetWithData}
               />
             </>
           )}
         </main>
 
-        {/* 3. 하단 네비게이션 */}
         <BottomNav 
           activeTab={activeTab} 
           onChangeTab={(tab) => {
@@ -117,10 +146,10 @@ function App() {
           }} 
         />
 
-        {/* 4. 바텀시트 */}
         <TransactionDetailBottomSheet 
           isOpen={isBottomSheetOpen} 
           onClose={handleCloseSheet} 
+          data={formatTransactionForSheet(selectedTransaction)}
         />
       </div>
     </div>

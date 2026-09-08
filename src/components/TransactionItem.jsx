@@ -1,15 +1,12 @@
-// 1. 계좌 ID를 실제 통장 이름으로 변환해주는 사전
 const ACCOUNT_NAMES = {
   acc1: '우리 첫급여통장',
   acc2: '우리 SUPER주거래통장',
   acc3: '우리 WON 적금'
 };
 
-export const TransactionItem = ({ transaction }) => {
+export const TransactionItem = ({ transaction, onClick }) => {
   const isDeposit = transaction.type === 'in';
   const isDone = transaction.status === 'done';
-
-  // 통장 이름 가져오기 (매핑표에 없으면 id 표시)
   const displayName = ACCOUNT_NAMES[transaction.accountId] || transaction.accountName || transaction.accountId;
 
   return (
@@ -19,8 +16,11 @@ export const TransactionItem = ({ transaction }) => {
         alignItems: 'center',
         padding: '14px 16px',
         borderBottom: '1px solid #f0f2f5',
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        cursor: 'pointer',
+        gap: '12px'
       }}
+      onClick={() => onClick && onClick(transaction)}
     >
       {/* 1. 좌측 아이콘 */}
       <div
@@ -35,16 +35,25 @@ export const TransactionItem = ({ transaction }) => {
           justifyContent: 'center',
           fontSize: '15px',
           fontWeight: 'bold',
-          flexShrink: 0,
-          marginRight: '12px'
+          flexShrink: 0
         }}
       >
         {isDeposit ? '↓' : '↑'}
       </div>
 
-      {/* 2. 중앙 내용 */}
-      <div style={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
-        <div style={{ fontSize: '15px', fontWeight: '600', color: '#212529', marginBottom: '3px' }}>
+      {/* 2. 중앙 내용 (말줄임 적용 및 겹침 방지) */}
+      <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
+        <div 
+          style={{ 
+            fontSize: '15px', 
+            fontWeight: '600', 
+            color: '#212529', 
+            marginBottom: '3px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
+        >
           {transaction.desc}
         </div>
         <div
@@ -54,11 +63,11 @@ export const TransactionItem = ({ transaction }) => {
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
-            whiteSpace: 'nowrap'
+            whiteSpace: 'nowrap',
+            overflow: 'hidden'
           }}
         >
-          {/* 변환된 displayName 출력 */}
-          <span>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {transaction.time} · {displayName}
           </span>
           <span
@@ -78,7 +87,7 @@ export const TransactionItem = ({ transaction }) => {
       </div>
 
       {/* 3. 우측 금액 및 잔액 */}
-      <div style={{ textAlign: 'right', flexShrink: 0, whiteSpace: 'nowrap', paddingLeft: '12px' }}>
+      <div style={{ textAlign: 'right', flexShrink: 0, whiteSpace: 'nowrap' }}>
         <div
           style={{
             fontSize: '15px',

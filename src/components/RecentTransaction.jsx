@@ -1,4 +1,4 @@
-const RecentTransaction = ({ transactions = [], onMoreClick }) => {
+const RecentTransaction = ({ transactions = [], onMoreClick, onSelectTransaction }) => {
   const recentTransactions = transactions.slice(0, 4);
 
   return (
@@ -9,7 +9,34 @@ const RecentTransaction = ({ transactions = [], onMoreClick }) => {
           더보기
         </button>
       </div>
-      {/* 이하 기존 동일 */}
+
+      <ul className="transaction-list">
+        {recentTransactions.map((item) => {
+          const isDeposit = item.type === 'in';
+          const title = item.desc || item.title || '거래 내역';
+          const formattedAmount = Number(item.amount || 0).toLocaleString();
+
+          return (
+            <li 
+              key={item.id} 
+              className="transaction-item"
+              style={{ cursor: 'pointer' }}
+              onClick={() => onSelectTransaction && onSelectTransaction(item)}
+            >
+              <div className="tx-info">
+                <span className="tx-title">{title}</span>
+                <span className="tx-date">{item.date}</span>
+              </div>
+
+              <div className="tx-amount-wrap">
+                <span className={`amount ${isDeposit ? 'plus' : 'minus'}`}>
+                  {isDeposit ? `+${formattedAmount}` : `-${formattedAmount}`}원
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 };
