@@ -53,12 +53,8 @@ const TransferPage = ({ onPageClose }) => {
     return (
         <div className="transfer-container">
             {/* 상단 헤더 */}
-            <header className="transfer-header">
-                <button type="button" className="btn-back" onClick={handleBack}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M15 18L9 12L15 6" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                </button>
+            <header >
+                
             </header>
 
             {/* 단계별 메인 뷰 */}

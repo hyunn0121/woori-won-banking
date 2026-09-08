@@ -8,6 +8,7 @@ import AccountSection from './components/AccountSection';
 import RecentTransaction from './components/RecentTransaction';
 import BottomNav from './components/BottomNav';
 import TransactionDetailBottomSheet from './components/TransactionBottomSheet/TransactionBottomSheet';
+import TransferPage from './components/Transfer/TransferPage';
 import { TransactionSection } from './components/TransactionSection';
 
 import './App.css';
@@ -18,21 +19,28 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // 1. 현재 탭 및 거래내역 화면용 선택 계좌 상태만 관리
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isTransferPageOpen, setIsTransferPageOpen] = useState(false);
+  const [isAssetHidden, setIsAssetHidden] = useState(false);
+
+  // 1. 현재 탭 및 거래내역 화면용 선택 계좌 상태
   const [activeTab, setActiveTab] = useState('home');
   const [selectedAccountForHistory, setSelectedAccountForHistory] = useState('전체계좌');
 
-  // 바텀시트 상태
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const handleOpenSheet = () => setIsBottomSheetOpen(true);
-  const handleCloseSheet = () => setIsBottomSheetOpen(false);
+  const handleOpenSheet = () => {
+    setIsBottomSheetOpen(true);
+  };
+
+  const handleCloseSheet = () => {
+    setIsBottomSheetOpen(false);
+  };
 
   // 2. 거래내역 화면으로 이동하는 전용 함수
   const handleGoToHistory = (accountName = '전체계좌') => {
     setSelectedAccountForHistory(accountName);
     setActiveTab('history');
   };
-
+  
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -47,7 +55,6 @@ function App() {
         setAccounts(accountData);
         setTransactions(transactionData);
       } catch (error) {
-        console.error('데이터를 불러오는 중 오류가 발생했습니다:', error);
         setHasError(true);
       } finally {
         setLoading(false);
@@ -65,63 +72,100 @@ function App() {
     );
   }
 
+  const handleOpenTransfer = () => {
+    setIsTransferPageOpen(true);
+  };
+
+  const handleCloseTransfer = () => {
+    setIsTransferPageOpen(false);
+  };
+
   return (
     <div className="app">
       <div className="phone-frame">
-        {/* 1. 최상단 고정 헤더 */}
-        <Header />
+        {/* 이체 페이지가 열렸을 때 */}
+        {isTransferPageOpen ? (
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+            <Header />
 
-        {/* 2. 중앙 컨텐츠 영역 */}
-        <main className="content-body">
-          {hasError ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '8px', color: '#64748b', textAlign: 'center' }}>
-              <p style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a' }}>서비스 연결을 확인할 수 없습니다</p>
-              <p style={{ fontSize: '13px' }}>네트워크 상태가 불안정하거나<br />서버 점검 중입니다.</p>
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              <TransferPage onPageClose={handleCloseTransfer} />
             </div>
-          ) : activeTab === 'history' ? (
-            /* 거래내역 탭일 때 나의 거래내역 화면 출력 */
-            <TransactionSection initialAccount={selectedAccountForHistory} />
-          ) : (
-            /* 홈 탭일 때 기본 홈 화면 출력 */
-            <>
-              <p className="greeting-hi">안녕하세요 👋</p>
-              <p className="greeting-name">김민준님</p>
+            
+            <BottomNav 
+              onOpenTransfer={handleOpenTransfer} 
+              onGoHome={handleCloseTransfer} 
+              currentTab="이체" 
+            />
+          </div>
+        ) : (
+          /* 홈 또는 기타 탭 화면 영역 */
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+            <Header />
 
-              <TotalAssetCard accounts={accounts} hasError={hasError} />
-              
-              <QuickMenu 
-                onGoToHistory={() => handleGoToHistory('전체계좌')}
-              />
-              
-              <AccountSection 
-                accounts={accounts} 
-                onOpenSheet={handleOpenSheet}
-                onViewAll={() => handleGoToHistory('전체계좌')}
-                onSelectAccount={(accName) => handleGoToHistory(accName)}
-              />
-              
-              <RecentTransaction 
-                transactions={transactions} 
-                onMoreClick={() => handleGoToHistory('전체계좌')}
-              />
-            </>
-          )}
-        </main>
+            <main className="content-body" style={{ flex: 1, overflowY: 'auto' }}>
+              {hasError ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '8px', color: '#64748b', textAlign: 'center' }}>
+                  <p style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a' }}>서비스 연결을 확인할 수 없습니다</p>
+                  <p style={{ fontSize: '13px' }}>네트워크 상태가 불안정하거나<br />서버 점검 중입니다.</p>
+                </div>
+              ) : activeTab === 'history' ? (
+                /* 거래내역 탭 화면 */
+                <TransactionSection 
+                  transactions={transactions} 
+                  selectedAccount={selectedAccountForHistory} 
+                  onOpenSheet={handleOpenSheet} 
+                />
+              ) : (
+                /* 기본 홈 화면 */
+                <>
+                  <p className="greeting-hi">안녕하세요 👋</p>
+                  <p className="greeting-name">김민준님</p>
 
-        {/* 3. 하단 네비게이션 */}
-        <BottomNav 
-          activeTab={activeTab} 
-          onChangeTab={(tab) => {
-            if (tab === '거래내역') handleGoToHistory('전체계좌');
-            else if (tab === '홈') setActiveTab('home');
-          }} 
-        />
+                  <TotalAssetCard 
+                    accounts={accounts} 
+                    hasError={hasError} 
+                    isHide={isAssetHidden}
+                    onToggleHide={() => setIsAssetHidden(!isAssetHidden)}
+                  />
 
-        {/* 4. 바텀시트 */}
-        <TransactionDetailBottomSheet 
-          isOpen={isBottomSheetOpen} 
-          onClose={handleCloseSheet} 
-        />
+                  <QuickMenu 
+                    onGoToHistory={() => handleGoToHistory('전체계좌')}
+                    onOpenTransfer={handleOpenTransfer}
+                  />
+
+                  <AccountSection 
+                    accounts={accounts} 
+                    onOpenSheet={handleOpenSheet} 
+                    onViewAll={() => handleGoToHistory('전체계좌')}
+                    onSelectAccount={(accName) => handleGoToHistory(accName)}
+                    onTransfer={handleOpenTransfer}
+                  />
+
+                  <RecentTransaction 
+                    transactions={transactions} 
+                    onOpenSheet={handleOpenSheet} 
+                  />
+                </>
+              )}
+            </main>
+
+            <BottomNav 
+              activeTab={activeTab}
+              onOpenTransfer={handleOpenTransfer}
+              onGoHome={() => setActiveTab('home')}
+              onChangeTab={(tab) => {
+                if (tab === '거래내역') handleGoToHistory('전체계좌');
+                else if (tab === '홈') setActiveTab('home');
+              }} 
+            />
+
+            <TransactionDetailBottomSheet 
+              isOpen={isBottomSheetOpen} 
+              onClose={handleCloseSheet} 
+            />
+          </div>
+        )}
       </div>
     </div>
   );

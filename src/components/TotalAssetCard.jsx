@@ -1,12 +1,7 @@
 // src/components/TotalAssetCard.jsx
-import { useState } from 'react';
-
-const TotalAssetCard = ({ accounts = [], hasError = false }) => {
-  const [isHide, setIsHide] = useState(false);
-
+const TotalAssetCard = ({ accounts = [], hasError = false, isHide = false, onToggleHide }) => {
   const totalBalance = accounts.reduce((acc, cur) => acc + cur.balance, 0);
 
-  // 에러 발생 시 카드 내부 정보를 아예 숨김
   if (hasError) {
     return (
       <div className="total-card" style={{ opacity: 0.6, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100px' }}>
@@ -22,7 +17,7 @@ const TotalAssetCard = ({ accounts = [], hasError = false }) => {
         <button 
           type="button" 
           className="eye-btn" 
-          onClick={() => setIsHide(!isHide)}
+          onClick={onToggleHide} // 상위에서 받은 토글 함수 실행
         >
           {isHide ? '보기' : '숨기기'}
         </button>
@@ -39,4 +34,4 @@ const TotalAssetCard = ({ accounts = [], hasError = false }) => {
   );
 };
 
-export default TotalAssetCard;
+export default TotalAssetCard
