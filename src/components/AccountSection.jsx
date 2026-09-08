@@ -1,4 +1,12 @@
-const AccountSection = ({ accounts = [], onViewAll, onTransfer, onSelectAccount }) => {
+// src/components/AccountSection.jsx
+
+const AccountSection = ({ 
+  accounts = [], 
+  onViewAll, 
+  onTransfer, 
+  onSelectAccount, 
+  isHide = false 
+}) => {
   return (
     <section className="account-section">
       <div className="section-head">
@@ -11,7 +19,7 @@ const AccountSection = ({ accounts = [], onViewAll, onTransfer, onSelectAccount 
       <ul className="account-list">
         {accounts.map((account) => (
           <li key={account.id} className="account-card">
-            {/* 통장 정보(이름, 번호) 영역을 누르면 거래내역으로 이동 */}
+            {/* 통장 정보(이름, 번호) 영역 클릭 시 거래내역으로 이동 */}
             <div 
               className="account-info" 
               style={{ cursor: 'pointer' }}
@@ -22,11 +30,12 @@ const AccountSection = ({ accounts = [], onViewAll, onTransfer, onSelectAccount 
             </div>
 
             <div className="account-body">
+              {/* isHide 상태에 따른 금액 마스킹 처리 */}
               <span className="account-balance">
-                {Number(account.balance).toLocaleString()}원
+                {isHide ? '••••••원' : `${Number(account.balance || 0).toLocaleString()}원`}
               </span>
-              
-              {/* 원래 원본 상태 코드 그대로 유지 (이체 연동 안 함) */}
+
+              {/* 이체 버튼 연동 */}
               <button 
                 type="button" 
                 className="transfer-btn"
