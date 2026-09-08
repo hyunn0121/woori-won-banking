@@ -1,6 +1,4 @@
-// src/components/AccountSection.jsx
-
-const AccountSection = ({ accounts = [], onViewAll, onTransfer }) => {
+const AccountSection = ({ accounts = [], onViewAll, onTransfer, isHide = false }) => {
   return (
     <section className="account-section">
       <div className="section-head">
@@ -20,11 +18,11 @@ const AccountSection = ({ accounts = [], onViewAll, onTransfer }) => {
 
             <div className="account-body">
               <span className="account-balance">
-                {Number(account.balance).toLocaleString()}원
+                {isHide ? '••••••원' : `${Number(account.balance).toLocaleString()}원`}
               </span>
-              
-              <button 
-                type="button" 
+
+              <button
+                type="button"
                 className="transfer-btn"
                 onClick={() => onTransfer && onTransfer(account)}
               >

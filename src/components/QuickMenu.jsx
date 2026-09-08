@@ -1,45 +1,37 @@
+import React from 'react';
 
-/**
- * [QuickMenu 컴포넌트]
- * 역할: 자주 쓰는 주요 메뉴(이체, 거래내역, 상품, 자산관리, 전체) 숏컷 버튼 목록 출력
- */
-
-import React from 'react'
-
-const QuickMenu = () => {
-
-  const handleMenuClick = (menuName) => {
-    console.log(`👉 퀵메뉴 클릭됨: ${menuName}`);
-  };
-
+const QuickMenu = ({ onOpenTransfer }) => {
   return (
     <ul className="quick-menu">
       <li>
-        <button type="button" onClick={() => handleMenuClick('이체')}>
+        <button 
+          type="button" 
+          onClick={() => onOpenTransfer?.()}
+        >
           <span className="icon" aria-hidden="true">💸</span>
           <span className="lbl">이체</span>
         </button>
       </li>
       <li>
-        <button type="button" onClick={() => handleMenuClick('거래내역')}>
+        <button type="button">
           <span className="icon" aria-hidden="true">📋</span>
           <span className="lbl">거래내역</span>
         </button>
       </li>
       <li>
-        <button type="button" onClick={() => handleMenuClick('상품')}>
+        <button type="button">
           <span className="icon" aria-hidden="true">📦</span>
           <span className="lbl">상품</span>
         </button>
       </li>
       <li>
-        <button type="button" onClick={() => handleMenuClick('자산관리')}>
+        <button type="button">
           <span className="icon" aria-hidden="true">📊</span>
           <span className="lbl">자산관리</span>
         </button>
       </li>
       <li>
-        <button type="button" onClick={() => handleMenuClick('전체')}>
+        <button type="button">
           <span className="icon" aria-hidden="true">⋯</span>
           <span className="lbl">전체</span>
         </button>
@@ -48,4 +40,4 @@ const QuickMenu = () => {
   );
 };
 
-export default QuickMenu
+export default QuickMenu;

@@ -1,6 +1,6 @@
 // src/components/RecentTransaction.jsx
 
-const RecentTransaction = ({ transactions = [] }) => {
+const RecentTransaction = ({ transactions = [], onOpenSheet }) => {
   // 최근순으로 상위 4개만 추출 (필요에 따라 개수 조정 가능)
   const recentTransactions = transactions.slice(0, 4);
 
@@ -20,7 +20,12 @@ const RecentTransaction = ({ transactions = [] }) => {
           const formattedAmount = Number(item.amount || 0).toLocaleString();
 
           return (
-            <li key={item.id} className="transaction-item">
+            <li 
+              key={item.id} 
+              className="transaction-item"
+              onClick={onOpenSheet} // 💡 항목 클릭 시 모달 오픈 함수 실행
+              style={{ cursor: 'pointer' }} // 💡 클릭 가능한 UI임을 알 수 있도록 커서 추가
+            >
               <div className="tx-info">
                 <span className="tx-title">{title}</span>
                 <span className="tx-date">{item.date}</span>
